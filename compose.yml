@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  mariadb:
+    extends:
+      file: ./compose/compose.db.yml
+      service: mariadb
+
+  mongo:
+    extends:
+      file: ./compose/compose.db.yml
+      service: mongo
+  
+  phpmyadmin:
+    extends:
+      file: ./compose/compose.db.yml
+      service: phpmyadmin
+
+  social-api:
+    image: gritt/social-api
+    build:
+        context: .
+        dockerfile: Dockerfile
+        target: production-social
+    working_dir: /usr/src/app
+    container_name: social-api
+    ports:
+      - ${SOCIAL_API_PORT}:${SOCIAL_API_PORT}
+    depends_on:
+      - mariadb
+      - auth-api
+    restart: on-failure:10
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SOCIAL_API_PORT:${SOCIAL_API_PORT}
+    command: >
+      sh -c "npx prisma migrate dev --schema=./prisma/schema.prisma && npm run seed && npm run start:prod"
+      
+  auth-api:
+    image: gritt/auth-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production-auth
+    working_dir: /usr/src/app
+    container_name: auth-api
+    ports:
+      - ${AUTH_API_PORT}:${AUTH_API_PORT}
+    depends_on:
+      - mongo
+    restart: on-failure:10
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB=${MONGO_DB}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+    command: >
+      sh -c "yarn seed && npm run start:prod"
+
+networks:
+  grpc-micro_default:
+    external: true
+    name: grpc-micro_default

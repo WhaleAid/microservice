@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package social;
+
+message Social {
+  string name = 1;
+  int32 id = 2;
+  string url = 3;
+}
+
+message GetRequest {
+  int32 id = 2;
+}
+
+message GetResponse {
+  oneof result {
+    Social social = 1;
+    string error = 2;
+  }
+}

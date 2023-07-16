@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package social;
+
+message Social {
+  string name = 1;
+  int32 id = 2;
+  String url = 3;
+}
+
+service SocialCRUDService {
+  rpc Get (GetRequest) returns (GetResponse);
+  rpc Add (AddRequest) returns (AddResponse);
+  rpc Update (UpdateRequest) returns (UpdateResponse);
+  rpc Delete (DeleteRequest) returns (DeleteResponse);
+}
+
+message GetRequest {
+  string name = 1;
+  int32 id = 2;
+  String url = 3;
+}
+
+message GetResponse {
+  repeated Social socials = 1;
+}
+
+message AddRequest {
+  string name = 1;
+  float price = 2;
+}
+
+message AddResponse {
+  Social social = 1;
+}
+
+message UpdateRequest {
+  Social social = 1;
+}
+
+message UpdateResponse {
+  Social social = 1;
+}
+
+message DeleteRequest {
+  string name = 1;
+}
+
+message DeleteResponse {
+  string message = 1;
+}

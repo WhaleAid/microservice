@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package auth;
+
+import "../social/v1alpha/social.proto";
+
+service AuthService {
+  rpc validateUser (AuthParams) returns (AuthResponse) {}
+}
+
+message AuthParams {
+  string token = 1;
+}
+
+message AuthResponse {
+  oneof result {
+    User user = 1;
+    string error = 2;
+  }
+}
+
+
+message User {
+  int64 id = 1;
+  string firstname = 2;
+  string lastname = 3;
+  string email = 4;
+  string password = 5;
+  Social social = 6;
+}
